@@ -4,6 +4,8 @@ import { createRouter } from './lib/router.js';
 import { createStore } from './lib/store.js';
 import { registerAccountRoutes } from './modules/accounts/accounts.routes.js';
 import { createAccountsService } from './modules/accounts/accounts.service.js';
+import { registerBalanceRoutes } from './modules/balances/balances.routes.js';
+import { createBalancesService } from './modules/balances/balances.service.js';
 import { registerCardRoutes } from './modules/cards/cards.routes.js';
 import { createCardsService } from './modules/cards/cards.service.js';
 import { registerTransactionRoutes } from './modules/transactions/transactions.routes.js';
@@ -15,13 +17,15 @@ export function createApp({ store = createStore(), logger = console } = {}) {
   const accounts = createAccountsService(store);
   const cards = createCardsService(store, accounts);
   const transactions = createTransactionsService(store, accounts, cards);
-  const services = { accounts, cards, transactions };
+  const balances = createBalancesService(store, accounts);
+  const services = { accounts, cards, transactions, balances };
 
   const router = createRouter();
   router.get('/health', () => ({ body: { status: 'ok' } }));
   registerAccountRoutes(router, services);
   registerCardRoutes(router, services);
   registerTransactionRoutes(router, services);
+  registerBalanceRoutes(router, services);
 
   return async function handle(req, res) {
     try {

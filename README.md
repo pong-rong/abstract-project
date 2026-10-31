@@ -41,6 +41,16 @@ All amounts are integers in **minor units** (cents). Errors are returned as `{ "
 | PATCH  | `/transactions/:id` | Update `{ description }` only                                               |
 | DELETE | `/transactions/:id` | Reverse (ledger entries are never physically deleted)                       |
 
+### Balances — `/balances` (read-only)
+
+| Method | Path                           | Description                                                        |
+|--------|--------------------------------|--------------------------------------------------------------------|
+| GET    | `/balances`                    | Totals per currency over non-closed accounts; filter `?currency=`  |
+| GET    | `/balances/:accountId`         | Balance, ledger balance, `reconciled` flag, in/out totals          |
+| GET    | `/balances/:accountId/history` | Statement with running balance; filter `?from=&to=` (ISO 8601)     |
+
+Balances are derived from completed transactions; reversed ones are excluded.
+
 Rules: operations require an `active` account; withdrawals and transfers check funds; transfers must be same-currency; `cardId` (withdrawals only) must be an active card of that account.
 
 ## Layout
@@ -54,5 +64,6 @@ src/
     accounts/            # *.service.js (logic) + *.routes.js (HTTP)
     cards/
     transactions/
+    balances/
 test/                    # node:test integration tests over HTTP
 ```
